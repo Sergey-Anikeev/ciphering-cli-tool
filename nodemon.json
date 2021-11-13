@@ -1,6 +1,0 @@
-{
-  "verbose": false,
-  "ignore": ["node_modules"],
-  "ext": "js",
-  "watch": "index.js"
-}
