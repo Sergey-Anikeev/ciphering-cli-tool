@@ -1,4 +1,5 @@
 const { Transform } = require('stream');
+const fs = require('fs');
 
 const alphLower = 'abcdefghijklmnopqrstuvwxyz';
 const alphUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -35,9 +36,10 @@ const encryptFunc = (data, shift, obj) => {
 
 
 class CustomTransform extends Transform {
-  constructor(config) {
+  constructor(config, outputFile) {
       super();
       this.config = config;
+      this.outputFile = outputFile;
   }
 
   _transform (data, encoding, callback) {
@@ -57,11 +59,19 @@ class CustomTransform extends Transform {
       shift *= -1;
     }
     if (data.toString().length > 1) {
+      if (!this.outputFile) {
+        process.stdout.write('\x1b[32m')
+      } else {
+        fs.appendFile(this.outputFile, '\n', callback);
+      }
       const arrData = data.toString().slice(0, data.toString().length - 2);
       arrData.split('').forEach((el) => {
         encryptFunc(el, shift, this);
       });
-      callback();
+      if (!this.outputFile) {
+        process.stdout.write('\n\x1b[0m');
+        callback();
+      } 
     } else {
       encryptFunc(data, shift, this);
       callback();
