@@ -1,21 +1,26 @@
 const fs = require('fs');
 const path = require('path');
+const validity = require('./validity');
 const CustomReadable = require('./streams/readable');
 const CustomTransform = require('./streams/transform');
 const CustomWritable = require('./streams/writable');
 
-function getValue(flag, flagFull) {
-    let flagIndex = process.argv.indexOf(flag);
-    if (flagIndex == -1) {
-      flagIndex = process.argv.indexOf(flagFull);
-    }
-    return flagIndex !== -1 ? process.argv[flagIndex + 1] : null;
+
+const getValue = (flag, flagFull) => {
+	let flagIndex = process.argv.indexOf(flag);
+	if (flagIndex < 0) {
+		flagIndex = process.argv.indexOf(flagFull);
+	}
+	return flagIndex !== -1 ? process.argv[flagIndex + 1] : null;
 }
+
 const config = getValue('-c', '--config');
 const inputFile = getValue('-i', '--input');
 const outputFile = getValue('-o', '--output');
 
-if (config) {
+const isValid = validity(config, inputFile, outputFile);
+
+if (isValid) {
     let readableStream
     if (inputFile) {
       readableStream = new CustomReadable(path.resolve(__dirname, inputFile.trim()), { highWaterMark: 1 });
