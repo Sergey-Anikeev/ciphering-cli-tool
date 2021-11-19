@@ -21,7 +21,7 @@ class CustomWritable extends Writable {
   }
 
   _write(chunk, encoding, callback) {
-    fs.appendFile(this.filePath, chunk.toString(), callback);
+    fs.appendFile(this.filePath, chunk, callback);
   }
 
   _destroy(err, callback) {
