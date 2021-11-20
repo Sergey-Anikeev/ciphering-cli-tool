@@ -6,22 +6,25 @@ const isFlagsValid = (flag, flagFull) => {
 	const flagIndex = process.argv.indexOf(flag);
 	const fullFlagIndex = process.argv.indexOf(flagFull);
 	if (flagIndex > 0 && fullFlagIndex > 0) {
-		process.stderr.write(`\x1b[31mError: option ${flag} and ${flagFull} is duplicated\x1b[0m`);
+		process.stderr.write(`\x1b[31mError: you provided ${flag} and ${flagFull} arguments together\x1b[0m`);
 		process.exit(2);
 	}
 	if (flagIndex != process.argv.lastIndexOf(flag)) {
-		process.stderr.write(`\x1b[31mError: option ${flag} is duplicated\x1b[0m`);
+		process.stderr.write(`\x1b[31mError: you provided ${flag} argument more than once\x1b[0m`);
 		process.exit(2);
 	}
 	if (fullFlagIndex != process.argv.lastIndexOf(flagFull)) {
-		process.stderr.write(`\x1b[31mError: option ${flagFull} is duplicated\x1b[0m`);
+		process.stderr.write(`\x1b[31mError: you provided ${flagFull} argument more than once\x1b[0m`);
 		process.exit(2);
 	}
 }
 
-module.exports = isFlagsValid;
-
 const validity = (config, inputFile, outputFile) => {
+	if (!config) {
+		process.stderr.write(`\x1b[31mError: you do not pass -c or --config argument\x1b[0m`);
+		process.exit(2);
+		return;
+	}
 	if (inputFile) {
 		const filePath = path.resolve(__dirname, inputFile.trim());
 		if (!fs.existsSync(filePath)) {
@@ -38,7 +41,7 @@ const validity = (config, inputFile, outputFile) => {
 	}
 	isFlagsValid('-c', '--config');
 	isFlagsValid('-i', '--input');
-  isFlagsValid('-o', '--output');
+    isFlagsValid('-o', '--output');
 
 	const configArray = config.split('-');
 	const regExConfig = new RegExp(/[ACR][01]?-/g);
@@ -63,5 +66,5 @@ const validity = (config, inputFile, outputFile) => {
 	})
 	return true;
 }
-module.exports = validity;
+ module.exports = { validity: validity, isFlagsValid: isFlagsValid };
 

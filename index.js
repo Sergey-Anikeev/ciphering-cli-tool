@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const validity = require('./validity');
+const { validity } = require('./validity');
 const CustomReadable = require('./streams/readable');
 const CustomTransform = require('./streams/transform');
 const CustomWritable = require('./streams/writable');
