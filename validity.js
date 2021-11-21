@@ -30,6 +30,7 @@ const validity = (config, inputFile, outputFile) => {
 		if (!fs.existsSync(filePath)) {
 		process.stderr.write(`\x1b[31mError: input file ${inputFile.trim()} not found at ${filePath}\x1b[0m`);
 		process.exit(2);
+		return;
 		}
 	} 
 	if (outputFile) {
@@ -37,6 +38,7 @@ const validity = (config, inputFile, outputFile) => {
 		if (!fs.existsSync(filePath)) {
 		process.stderr.write(`\x1b[31mError: output file ${outputFile.trim()} not found at ${filePath}\x1b[0m`);
 		process.exit(2);
+		return;
 		}
 	}
 	isFlagsValid('-c', '--config');
@@ -46,21 +48,29 @@ const validity = (config, inputFile, outputFile) => {
 	const configArray = config.split('-');
 	const regExConfig = new RegExp(/[ACR][01]?-/g);
 	const matchArray = config.match(regExConfig);
-	if (configArray.length != matchArray.length + 1) {
-		process.stderr.write(`\x1b[31mError: wrong config.${config}\x1b[0m`);
+	if (!matchArray) {
+		process.stderr.write(`\x1b[31mError: wrong config. "${config}"\x1b[0m`);
 		process.exit(2);
+		return;
+	}
+	if (configArray.length != matchArray.length + 1) {
+		process.stderr.write(`\x1b[31mError: wrong config. "${config}"\x1b[0m`);
+		process.exit(2);
+		return;
 	}
 	const regEx1 = new RegExp(/^[CR][01]$/);
 	const regEx2 = new RegExp(/^A$/);
 	configArray.forEach((el) => {
 		if (el.trim().length > 2) {
-			process.stderr.write(`\x1b[31mError: wrong config.${config}\x1b[0m`);
+			process.stderr.write(`\x1b[31mError: wrong config. "${config}"\x1b[0m`);
 			process.exit(2);
+			return;
 		}
 		if (!regEx1.test(el.trim())) {
 			if (!regEx2.test(el.trim())) {
-				process.stderr.write(`\x1b[31mError: wrong config. This part "${el.trim()}" of "${config.trim()}"\x1b[0m`);
+				process.stderr.write(`\x1b[31mError: wrong config. "${config}"\x1b[0m`);
 				process.exit(2);
+				return;
 			}
 		}
 	})
